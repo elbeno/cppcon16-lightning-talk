@@ -16,20 +16,27 @@
 # (setq org-reveal-title-slide 'auto)
 # see https://github.com/yjwen/org-reveal/commit/84a445ce48e996182fde6909558824e154b76985
 
-#+TITLE: An Alternative to Virtual Functions
+#+TITLE: A Static Alternative to Virtual Functions
 #+AUTHOR: Ben Deane
 #+EMAIL: bdeane@blizzard.com
 #+DATE: A Lightning Talk for CppCon 2016
 
 * Expression SFINAE
-(A simple application)
+(A simple application thereof)
+
+(For "normal programmers")
 
 ** The Basic Idea
+#+ATTR_REVEAL: :frag (appear)
  - The interface is a class template.
  - The implementation is the template argument that supplies the functionality.
  - The implementation supplies the basis set of functions.
  - The interface may offer a richer API for the sake of expressivity.
  - The implementation may supply the richer functions for the sake of performance.
+
+#+BEGIN_NOTES
+Good interface design should involve identification of a minimal basis set.
+#+END_NOTES
 
 ** Example: autocompletion
 #+BEGIN_SRC cpp
@@ -51,6 +58,11 @@
 #+END_SRC
 The optional functions may be implemented in terms of the basis functions.
 
+#+BEGIN_NOTES
+Complete completes a prefix up to the point where it becomes ambiguous. i.e. if
+all of the candidates share a common prefix, we can complete up to that point.
+#+END_NOTES
+
 ** Expression SFINAE
 We will detect the implementation's capability with expression SFINAE.
 #+BEGIN_SRC cpp
@@ -71,6 +83,10 @@ We will detect the implementation's capability with expression SFINAE.
                 declval<T>().AddWords(0, 0))
 #+END_SRC
 
+#+BEGIN_NOTES
+AddWords is a function template (takes iterators), and we just pass it (int,
+int) here.
+#+END_NOTES
 
 ** Call the function, if provided
 Interface overloads on whether the implementation has a function, and if not,
@@ -93,6 +109,11 @@ provides a fallback.
   }
 #+END_SRC
 
+#+BEGIN_NOTES
+Because the class is a template, only the functions that are used are
+instantiated.
+#+END_NOTES
+
 ** That's it
  - The interface may add functions to be arbitrarily expressive.
  - The implementation may implement arbitrary functions from the extended set
@@ -101,3 +122,8 @@ provides a fallback.
    optimized at compile time.
 
 Full example code: https://github.com/elbeno/autocomplete
+
+#+BEGIN_NOTES
+In some cases, there may be a choice of basis functions. (Some basis functions
+may be implementable in terms of others and vice versa.)
+#+END_NOTES
